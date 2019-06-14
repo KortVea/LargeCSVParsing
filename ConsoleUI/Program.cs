@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using TrimbleDataCSVProcessor;
 
-namespace ConsoleApp1
+namespace ConsoleUI
 {
     class Program
     {
@@ -23,6 +23,7 @@ namespace ConsoleApp1
             var totalCount = File.ReadLines(pathSource).Count();
             Console.WriteLine(totalCount);
 
+            var index = 0;
             using (var writer = new CSVFilesWriteDispatcher(pathOutput))
             using (var sr = new StreamReader(pathSource))
             {
@@ -30,6 +31,7 @@ namespace ConsoleApp1
                 var firstLine = true;
                 while ((line = sr.ReadLine()) != null)
                 {
+                    index++;
                     if (firstLine)
                     {
                         firstLine = false;
@@ -44,14 +46,58 @@ namespace ConsoleApp1
                     {
                         errorCount++;
                     }
+                    if (index % 5000 == 0)
+                    {
+                        drawTextProgressBar(index, totalCount);
+                    }
                 }
+                drawTextProgressBar(index, totalCount);
 
+                Console.WriteLine("Generating Report...");
+                writer.GenerateReport();
+                Console.WriteLine("Done.");
             }
 
             sw.Stop();
-            Console.WriteLine("Eplased time: " + sw.Elapsed.Seconds);
+            Console.WriteLine("Total Eplased Time: " + sw.Elapsed.ToString());
             Console.WriteLine("Error Count: " + errorCount);
+
+            
+
             Console.ReadLine();
+        }
+
+        private static void drawTextProgressBar(int progress, int total)
+        {
+            //draw empty progress bar
+            Console.CursorLeft = 0;
+            Console.Write("["); //start
+            Console.CursorLeft = 32;
+            Console.Write("]"); //end
+            Console.CursorLeft = 1;
+            float onechunk = 30.0f / total;
+
+            //draw filled part
+            int position = 1;
+            for (int i = 0; i < onechunk * progress; i++)
+            {
+                Console.BackgroundColor = ConsoleColor.Green;
+                Console.CursorLeft = position++;
+                Console.Write(" ");
+            }
+
+            //draw unfilled part
+            for (int i = position; i <= 31; i++)
+            {
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.CursorLeft = position++;
+                Console.Write(" ");
+            }
+
+            //draw totals
+            Console.CursorLeft = 35;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Write(progress.ToString() + " of " + total.ToString() + "    "); //blanks at the end remove any excess
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
-namespace ConsoleApp1
+namespace ConsoleUI
 {
     public class CSVFilesWriteDispatcher : IDisposable
     {
@@ -33,6 +34,23 @@ namespace ConsoleApp1
         {
             var writer = writerByMonthDic[fileName];
             writer.WriteLine(item.ToString());
+        }
+
+        public void GenerateReport()
+        {
+            using (var sw = new StreamWriter(Path.Combine(outputPath, "Report.txt")))
+            {
+                sw.WriteLine($"\tReport\t{DateTime.Now.ToShortDateString()}");
+                foreach (var item in writerByMonthDic.Keys)
+                {
+                    var lines = File.ReadLines(Path.Combine(outputPath, item));
+                    var lineCount = lines.Count();
+                    sw.WriteLine($"File: {item}\t\tLine Count: {lineCount}");
+                    var distinctLineCount = lines.Select(i => i.Split(',')[1]).Distinct().Count();
+                    sw.WriteLine($"Distinct EquipmentId Count: {distinctLineCount}");
+                }
+                sw.WriteLine("------------------------------");
+            }
         }
 
         public void Dispose()
