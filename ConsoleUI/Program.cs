@@ -46,7 +46,7 @@ namespace ConsoleUI
                     {
                         errorCount++;
                     }
-                    if (index % 5000 == 0)
+                    if (index % 10000 == 0)
                     {
                         drawTextProgressBar(index, totalCount);
                     }

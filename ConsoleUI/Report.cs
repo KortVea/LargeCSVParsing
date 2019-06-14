@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ConsoleUI
 {
-    public class PerFileInfoModel
+    public class Report
     {
         public string FileName { get; set; }
         public int TotalLineCount { get; set; }

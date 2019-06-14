@@ -15,7 +15,7 @@ namespace ConsoleUI
         {
             outputPath = path ?? throw new Exception("Output path can't be null");
         }
-        public void WriteToCSVFilesAccordingToMonth(ReportModel item)
+        public List<Report> WriteToCSVFilesAccordingToMonth(ReportModel item)
         {
             var fileName = $"{item.Date.Year}-{item.Date.Month}.csv";
             if (writerByMonthDic.ContainsKey(fileName))
@@ -36,22 +36,22 @@ namespace ConsoleUI
             writer.WriteLine(item.ToString());
         }
 
-        public void GenerateReport()
-        {
-            using (var sw = new StreamWriter(Path.Combine(outputPath, "Report.txt")))
-            {
-                sw.WriteLine($"\tReport\t{DateTime.Now.ToShortDateString()}");
-                foreach (var item in writerByMonthDic.Keys)
-                {
-                    var lines = File.ReadLines(Path.Combine(outputPath, item));
-                    var lineCount = lines.Count();
-                    sw.WriteLine($"File: {item}\t\tLine Count: {lineCount}");
-                    var distinctLineCount = lines.Select(i => i.Split(',')[1]).Distinct().Count();
-                    sw.WriteLine($"Distinct EquipmentId Count: {distinctLineCount}");
-                }
-                sw.WriteLine("------------------------------");
-            }
-        }
+        //public void GenerateReport()
+        //{
+        //    using (var sw = new StreamWriter(Path.Combine(outputPath, "Report.txt")))
+        //    {
+        //        sw.WriteLine($"\tReport\t{DateTime.Now.ToShortDateString()}");
+        //        foreach (var item in writerByMonthDic.Keys)
+        //        {
+        //            var lines = File.ReadLines(Path.Combine(outputPath, item));
+        //            var lineCount = lines.Count();
+        //            sw.WriteLine($"File: {item}\t\tLine Count: {lineCount}");
+        //            var distinctLineCount = lines.Select(i => i.Split(',')[1]).Distinct().Count();
+        //            sw.WriteLine($"Distinct EquipmentId Count: {distinctLineCount}");
+        //        }
+        //        sw.WriteLine("------------------------------");
+        //    }
+        //}
 
         public void Dispose()
         {
