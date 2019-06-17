@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using TrimbleDataCSVProcessor;
@@ -23,6 +25,7 @@ namespace ConsoleUI
             var totalCount = File.ReadLines(pathSource).Count();
             Console.WriteLine(totalCount);
 
+            var fileNameList = new List<string>();
             var index = 0;
             using (var writer = new CSVFilesWriteDispatcher(pathOutput))
             using (var sr = new StreamReader(pathSource))
@@ -54,7 +57,7 @@ namespace ConsoleUI
                 drawTextProgressBar(index, totalCount);
 
                 Console.WriteLine("Generating Report...");
-                writer.GenerateReport();
+                fileNameList = writer.GetNamesOfGeneratedFile();
                 Console.WriteLine("Done.");
             }
 
@@ -62,9 +65,39 @@ namespace ConsoleUI
             Console.WriteLine("Total Eplased Time: " + sw.Elapsed.ToString());
             Console.WriteLine("Error Count: " + errorCount);
 
-            
+            sw.Restart();
+            Console.WriteLine("Generating Report ...");
+            GenerateFileReport(fileNameList, pathOutput);
+            sw.Stop();
+            Console.WriteLine("Total Eplased Time: " + sw.Elapsed.ToString());
 
             Console.ReadLine();
+        }
+
+        private static void GenerateFileReport(List<string> fileNameList, string pathOutput)
+        {
+            var reportPath = Path.Combine(pathOutput, $"Report-{DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss", CultureInfo.InvariantCulture)}.txt");
+            using (var sw = new StreamWriter(reportPath))
+            {
+                var count = fileNameList.Count();
+                for (int i = 0; i < count; i++)
+                {
+                    var msg = $"{i + 1}/{count + 1}\tProcessing {fileNameList[i]}\t ";
+                    Console.Write(msg);
+                    sw.Write(msg);
+                    var path = Path.Combine(pathOutput, fileNameList[i]);
+                    var lines = File.ReadLines(path);
+                    var lineCount = lines.Count();
+                    msg = $"Total lines: {lineCount}\t";
+                    Console.Write(msg);
+                    sw.Write(msg);
+                    var uniqueLineCount = lines.Distinct().Count();
+                    msg = $"Unique: {uniqueLineCount}";
+                    Console.WriteLine(msg);
+                    sw.WriteLine(msg);
+                }
+            }
+            
         }
 
         private static void drawTextProgressBar(int progress, int total)
