@@ -89,12 +89,14 @@ namespace ConsoleUI
                     sw.Write(msg);
                     var path = Path.Combine(pathOutput, fileNameList[i]);
                     var lines = File.ReadLines(path);
+
                     var lineCount = lines.Count();
                     msg = $"Total lines: {lineCount}\t";
                     Console.Write(msg);
                     sw.Write(msg);
-                    var uniqueLineCount = lines.Distinct().Count();
-                    msg = $"Unique: {uniqueLineCount}";
+
+                    var uniqueLineCount = lines.Select(l => l.Split(',')[1]).Distinct().Count();
+                    msg = $"Unique equipmentId count: {uniqueLineCount}";
                     Console.WriteLine(msg);
                     sw.WriteLine(msg);
                 }
