@@ -17,16 +17,12 @@ namespace ConsoleUI
         public void WriteToCSVFilesAccordingToMonth(ReportModel item)
         {
             var fileName = $"{item.Date.Year}-{item.Date.Month}.csv";
-            if (writerByMonthDic.ContainsKey(fileName))
-            {
-                WriteOut(fileName, item);
-            }
-            else
+            if (!writerByMonthDic.ContainsKey(fileName))
             {
                 var writer = new StreamWriter(Path.Combine(outputPath, fileName));
                 writerByMonthDic.Add(fileName, writer);
-                WriteOut(fileName, item);
             }
+           WriteOut(fileName, item);
         }
 
         private void WriteOut(string fileName, ReportModel item)

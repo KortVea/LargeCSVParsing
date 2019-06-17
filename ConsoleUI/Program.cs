@@ -12,12 +12,13 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            int errorCount = 0;
             var pathSource = @"C:\Users\Yishi_Liu\Documents\TTLDOG-1517.csv";
             var pathRef = @"C:\Users\Yishi_Liu\Documents\AU-AssetList.xlsx";
             var pathOutput = @"C:\Users\Yishi_Liu\Documents\CSVTEST";
 
+            Console.Write($"Reading {pathRef} ...");
             var refDic = new CSVProcessor().ParseIntoDictionaryFromFile(pathRef);
+            Console.WriteLine("Done.");
 
             var sw = new Stopwatch();
             sw.Start();
@@ -27,6 +28,7 @@ namespace ConsoleUI
 
             var fileNameList = new List<string>();
             var index = 0;
+            int errorCount = 0;
             using (var writer = new CSVFilesWriteDispatcher(pathOutput))
             using (var sr = new StreamReader(pathSource))
             {
