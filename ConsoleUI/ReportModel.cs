@@ -26,10 +26,9 @@ namespace ConsoleUI
 
             var equipmentId = components[0].Trim('"');
             var date = components[1].Trim('"');
-            float lat = 0, lng = 0;
-            float.TryParse(components[2], out lat);
+            float.TryParse(components[2], out var lat);
             lat /= 100000;
-            float.TryParse(components[3], out lng);
+            float.TryParse(components[3], out var lng);
             lng /= 100000;
             if (!refDic.ContainsKey(equipmentId)) return;
 

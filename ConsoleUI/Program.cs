@@ -17,7 +17,7 @@ namespace ConsoleUI
             var pathOutput = @"C:\Users\Yishi_Liu\Documents\CSVTEST";
 
             Console.Write($"Reading {pathRef} ...");
-            var refDic = new CSVProcessor().ParseIntoDictionaryFromFile(pathRef);
+            var refDic = new CsvProcessor().ParseIntoDictionaryFromFile(pathRef);
             Console.WriteLine("Done.");
 
             var sw = new Stopwatch();
@@ -45,7 +45,7 @@ namespace ConsoleUI
                     var item = new ReportModel(line, refDic);
                     if (item.IsValid)
                     {
-                        writer.WriteToCSVFilesAccordingToMonth(item);
+                        writer.WriteToCsvFilesAccordingToMonth(item);
                     }
                     else
                     {
@@ -53,10 +53,10 @@ namespace ConsoleUI
                     }
                     if (index % 10000 == 0)
                     {
-                        drawTextProgressBar(index, totalCount);
+                        DrawTextProgressBar(index, totalCount);
                     }
                 }
-                drawTextProgressBar(index, totalCount);
+                DrawTextProgressBar(index, totalCount);
 
                 Console.WriteLine("Generating Report...");
                 fileNameList = writer.GetNamesOfGeneratedFile();
@@ -64,14 +64,14 @@ namespace ConsoleUI
             }
 
             sw.Stop();
-            Console.WriteLine("Total Eplased Time: " + sw.Elapsed.ToString());
+            Console.WriteLine("Total Elapsed Time: " + sw.Elapsed);
             Console.WriteLine("Error Count: " + errorCount);
 
             sw.Restart();
             Console.WriteLine("Generating Report ...");
             GenerateFileReport(fileNameList, pathOutput);
             sw.Stop();
-            Console.WriteLine("Total Eplased Time: " + sw.Elapsed.ToString());
+            Console.WriteLine("Total Elapsed Time: " + sw.Elapsed);
 
             Console.ReadLine();
         }
@@ -82,7 +82,7 @@ namespace ConsoleUI
             using (var sw = new StreamWriter(reportPath))
             {
                 var count = fileNameList.Count();
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     var msg = $"{i + 1}/{count + 1}\tProcessing {fileNameList[i]}\t ";
                     Console.Write(msg);
@@ -101,10 +101,10 @@ namespace ConsoleUI
                     sw.WriteLine(msg);
                 }
             }
-            
+
         }
 
-        private static void drawTextProgressBar(int progress, int total)
+        private static void DrawTextProgressBar(int progress, int total)
         {
             //draw empty progress bar
             Console.CursorLeft = 0;
@@ -112,11 +112,11 @@ namespace ConsoleUI
             Console.CursorLeft = 32;
             Console.Write("]"); //end
             Console.CursorLeft = 1;
-            float onechunk = 30.0f / total;
+            var oneChunk = 30.0f / total;
 
             //draw filled part
-            int position = 1;
-            for (int i = 0; i < onechunk * progress; i++)
+            var position = 1;
+            for (var i = 0; i < oneChunk * progress; i++)
             {
                 Console.BackgroundColor = ConsoleColor.Green;
                 Console.CursorLeft = position++;
@@ -124,7 +124,7 @@ namespace ConsoleUI
             }
 
             //draw unfilled part
-            for (int i = position; i <= 31; i++)
+            for (var i = position; i <= 31; i++)
             {
                 Console.BackgroundColor = ConsoleColor.Gray;
                 Console.CursorLeft = position++;
@@ -134,7 +134,7 @@ namespace ConsoleUI
             //draw totals
             Console.CursorLeft = 35;
             Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write(progress.ToString() + " of " + total.ToString() + "    "); //blanks at the end remove any excess
+            Console.Write(progress + " of " + total + "    "); //blanks at the end remove any excess
         }
     }
 }
