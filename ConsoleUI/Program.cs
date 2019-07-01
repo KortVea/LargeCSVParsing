@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using TrimbleDataCSVProcessor;
 
 namespace ConsoleUI
@@ -12,13 +13,60 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            var pathSource = @"C:\Users\Yishi_Liu\Documents\TTLDOG-1517.csv";
-            var pathRef = @"C:\Users\Yishi_Liu\Documents\AU-AssetList.xlsx";
-            var pathOutput = @"C:\Users\Yishi_Liu\Documents\CSVTEST";
+            //Source Format 1 Illustration:
+            //  "Vehicle","DateTime_UTC","latitude","longitude","speed","heading","mileage"
+            //  "Democase - Anthony","2018-05-01 00:12:36.488000",-3378421,15113029,0,196,2438068
 
-            Console.Write($"Reading {pathRef} ...");
-            var refDic = new CsvProcessor().ParseIntoDictionaryFromFile(pathRef);
-            Console.WriteLine("Done.");
+            //var pathSource = @"C:\Users\Yishi_Liu\Documents\TTLDOG-1517.csv";
+            //var pathRef = @"C:\Users\Yishi_Liu\Documents\AU-AssetList.xlsx";
+            //var pathOutput = @"C:\Users\Yishi_Liu\Documents\CSVTEST";
+            //ProcessFormat1(pathSource, pathOutput, pathRef);
+
+            //Source Format 2 Illustration:
+            //  "Ref(AssetId)","Vehicle(EquipmentId)","DateTime_UTC","Latitude","Longitude"
+            //  "BM113,13139026,ENSH","BM113","2014-12-31 23:00:34.029000",-2185689,14842776
+
+            var pathSourceFolder = @"C:\Users\Yishi_Liu\Downloads\1unzip";//folder path containing all the .csv to parse. Search through all subfolders.
+            ProcessFormat2(pathSourceFolder);
+
+            Console.ReadLine();
+        }
+
+        private static void ProcessFormat2(string pathSourceFolder)
+        {
+            var pathResult = Path.Combine(pathSourceFolder, "Result");
+            if (Directory.Exists(pathResult))
+            {
+                try
+                {
+                    Directory.Delete(pathResult);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+            Directory.CreateDirectory(pathResult);
+
+            var files = Directory.EnumerateFiles(pathSourceFolder, "*.csv", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                Console.WriteLine($"Processing {file}");
+                ProcessFormat1(file, pathResult);
+            }
+
+        }
+
+        private static void ProcessFormat1(string pathSource, string pathOutput, string pathRef = null)
+        {
+            var refDic = new SortedDictionary<string, string>();
+            if (pathRef != null)
+            {
+                Console.Write($"Reading {pathRef} ...");
+                refDic = new CsvProcessor().ParseIntoDictionaryFromFile(pathRef);
+                Console.WriteLine("Done.");
+            }
 
             var sw = new Stopwatch();
             sw.Start();
@@ -42,7 +90,7 @@ namespace ConsoleUI
                         firstLine = false;
                         continue;
                     }
-                    var item = new ReportModel(line, refDic);
+                    var item = refDic.Count == 0? new ReportModel(line) : new ReportModel(line, refDic);
                     if (item.IsValid)
                     {
                         writer.WriteToCsvFilesAccordingToMonth(item);
@@ -72,8 +120,6 @@ namespace ConsoleUI
             GenerateFileReport(fileNameList, pathOutput);
             sw.Stop();
             Console.WriteLine("Total Elapsed Time: " + sw.Elapsed);
-
-            Console.ReadLine();
         }
 
         private static void GenerateFileReport(List<string> fileNameList, string pathOutput)
@@ -84,7 +130,7 @@ namespace ConsoleUI
                 var count = fileNameList.Count();
                 for (var i = 0; i < count; i++)
                 {
-                    var msg = $"{i + 1}/{count + 1}\tProcessing {fileNameList[i]}\t ";
+                    var msg = $"{i + 1}/{count}\tProcessing {fileNameList[i]}\t ";
                     Console.Write(msg);
                     sw.Write(msg);
                     var path = Path.Combine(pathOutput, fileNameList[i]);

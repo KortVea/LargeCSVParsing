@@ -41,6 +41,28 @@ namespace ConsoleUI
             IsValid = true;
         }
 
+        public ReportModel(string line)
+        {
+            if (line == null) return;
+            var components = line.Split(',');
+            if (components.Length < 7) return;
+
+            var equipmentId = components[0].Trim('"');
+            var date = components[4].Trim('"');
+            float.TryParse(components[5], out var lat);
+            lat /= 100000;
+            float.TryParse(components[6], out var lng);
+            lng /= 100000;
+
+            AssetId = components[1];
+            EquipmentId = equipmentId;
+            Date = DateTime.Parse(date);
+            Latitude = lat;
+            Longitude = lng;
+
+            IsValid = true;
+        }
+
         public override string ToString()
         {
             return $@"""{AssetId}"",""{EquipmentId}"",""{Date:O}"",""{Latitude}"",""{Longitude}""";
