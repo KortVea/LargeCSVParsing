@@ -14,7 +14,7 @@ namespace ConsoleUI
         public bool IsValid { get; set; }
         public ReportModel(){}
 
-        //line format:
+        //line format1:
         //"Vehicle","DateTime_UTC","latitude","longitude","speed","heading","mileage"
         //"Democase - Anthony","2018-05-01 01:38:23.241000",-3378431,15113032,0,0,2438068
         public ReportModel(string line, SortedDictionary<string, string> refDic)
@@ -41,6 +41,9 @@ namespace ConsoleUI
             IsValid = true;
         }
 
+        // line format2:
+        // "Ref(AssetId)","Vehicle(EquipmentId)","DateTime_UTC","Latitude","Longitude"
+        // "BM113,13139026,ENSH","BM113","2014-12-31 23:00:34.029000",-2185689,14842776
         public ReportModel(string line)
         {
             if (line == null) return;

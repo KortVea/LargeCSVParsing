@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using TrimbleDataCSVProcessor;
+using JsonConfig.Net;
 
 namespace ConsoleUI
 {
@@ -13,21 +13,9 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            //Source Format 1 Illustration:
-            //  "Vehicle","DateTime_UTC","latitude","longitude","speed","heading","mileage"
-            //  "Democase - Anthony","2018-05-01 00:12:36.488000",-3378421,15113029,0,196,2438068
+            //ProcessFormat1(Config.User.format1.source, Config.User.format1.@ref, Config.User.format1.output);
 
-            //var pathSource = @"C:\Users\Yishi_Liu\Documents\TTLDOG-1517.csv";
-            //var pathRef = @"C:\Users\Yishi_Liu\Documents\AU-AssetList.xlsx";
-            //var pathOutput = @"C:\Users\Yishi_Liu\Documents\CSVTEST";
-            //ProcessFormat1(pathSource, pathOutput, pathRef);
-
-            //Source Format 2 Illustration:
-            //  "Ref(AssetId)","Vehicle(EquipmentId)","DateTime_UTC","Latitude","Longitude"
-            //  "BM113,13139026,ENSH","BM113","2014-12-31 23:00:34.029000",-2185689,14842776
-
-            var pathSourceFolder = @"C:\Users\Yishi_Liu\Downloads\1unzip";//folder path containing all the .csv to parse. Search through all subfolders.
-            ProcessFormat2(pathSourceFolder);
+            ProcessFormat2(Config.User.format2.sourceFolder);
 
             Console.ReadLine();
         }
@@ -76,7 +64,7 @@ namespace ConsoleUI
 
             var fileNameList = new List<string>();
             var index = 0;
-            int errorCount = 0;
+            var errorCount = 0;
             using (var writer = new CSVFilesWriteDispatcher(pathOutput))
             using (var sr = new StreamReader(pathSource))
             {
